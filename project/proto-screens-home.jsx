@@ -51,7 +51,7 @@ function Home() {
 
 function tiles(items) {
   return (
-    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 7 }}>
+    <div className="tile-grid">
       {items.map((t, i) => (
         <Tap key={i} className={"tile" + (t.variant ? " tile-" + t.variant : "")}
           style={!t.variant && t.border ? { borderColor: "var(--" + t.border + ")" } : {}}

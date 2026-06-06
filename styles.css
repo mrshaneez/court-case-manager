@@ -1625,3 +1625,241 @@ body {
   background: linear-gradient(transparent, var(--paper));
   pointer-events: none;
 }
+
+/* ── Tile grid ──────────────────────────────────────────────── */
+
+.tile-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 7px;
+}
+
+/* ── Sidebar brand (desktop only) ───────────────────────────── */
+
+.sidebar-brand    { display: none; }
+.sidebar-logo     { display: none; }
+.sidebar-appname  { display: none; }
+.sidebar-role     { display: none; }
+
+/* ══════════════════════════════════════════════════════════════
+   RESPONSIVE WEB / DESKTOP LAYOUT  (≥ 768 px)
+   Tab bar → vertical sidebar · Phone shell → full viewport
+   ══════════════════════════════════════════════════════════════ */
+
+@media (min-width: 768px) {
+
+  /* ── Background ─────────────────────────────────────────────── */
+  body {
+    background: linear-gradient(135deg, #eef2ff 0%, #f5f3ff 50%, #e0f2fe 100%);
+    align-items: stretch;
+    justify-content: stretch;
+    min-height: 100dvh;
+  }
+
+  /* ── Full-screen shell (no phone chrome) ────────────────────── */
+  .app-phone {
+    width: 100vw;
+    height: 100dvh;
+    border-radius: 0;
+    transform: none !important;
+    box-shadow: none;
+    flex-direction: row;
+    background: transparent;
+    font-size: 14px;
+  }
+
+  /* ── Hide phone status bar ──────────────────────────────────── */
+  .wf-status { display: none; }
+
+  /* ── Sidebar ────────────────────────────────────────────────── */
+  .wf-tabbar {
+    order: -1;             /* renders left of app-screen */
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
+    width: 224px;
+    flex: 0 0 224px;
+    height: 100%;
+    border-top: none;
+    border-right: 1px solid var(--line);
+    background: #ffffff;
+    padding: 0 10px 20px;
+    gap: 2px;
+    overflow-y: auto;
+    box-shadow: 1px 0 3px rgba(0,0,0,.05);
+  }
+
+  /* ── Sidebar brand header ───────────────────────────────────── */
+  .sidebar-brand {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    padding: 22px 6px 18px;
+    margin-bottom: 6px;
+    border-bottom: 1px solid var(--line-2);
+  }
+  .sidebar-logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #2563eb, #7c3aed);
+    color: #fff;
+    font-size: 18px;
+    flex: 0 0 auto;
+    box-shadow: 0 3px 10px rgba(37,99,235,.35);
+  }
+  .sidebar-appname {
+    display: block;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--ink);
+    line-height: 1.2;
+  }
+  .sidebar-role {
+    display: block;
+    font-size: 10.5px;
+    color: var(--ink-soft);
+    margin-top: 2px;
+  }
+
+  /* ── Sidebar nav items ──────────────────────────────────────── */
+  .wf-tabbar .tab {
+    flex: none;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    padding: 10px 14px;
+    border-radius: 9px;
+    font-size: 13.5px;
+    font-weight: 500;
+    gap: 12px;
+    color: var(--ink-soft);
+    transition: background 0.12s ease, color 0.12s ease;
+  }
+  .wf-tabbar .tab:hover { background: var(--paper-2); color: var(--ink); }
+  .wf-tabbar .tab.on {
+    background: #eff6ff;
+    color: var(--info);
+    font-weight: 600;
+  }
+  .wf-tabbar .ico {
+    width: 28px;
+    height: 28px;
+    font-size: 18px;
+    background: transparent;
+    border: none;
+  }
+  .wf-tabbar .tab.on .ico { color: var(--info); }
+  .tabbadge { font-size: 9px; }
+
+  /* ── Main content area ──────────────────────────────────────── */
+  .app-screen {
+    flex: 1;
+    min-width: 0;
+    background: linear-gradient(160deg, #f4f3f1 0%, #efeee9 100%);
+    height: 100%;
+  }
+
+  /* ── App bar (top header on desktop) ────────────────────────── */
+  .wf-appbar {
+    padding: 14px 28px 16px;
+    background: #ffffff;
+    border-bottom: 1px solid var(--line);
+    box-shadow: 0 1px 4px rgba(0,0,0,.04);
+  }
+  .wf-appbar .title { font-size: 20px; }
+  .wf-appbar .sub   { font-size: 12px; }
+
+  /* ── Scrollable body ────────────────────────────────────────── */
+  .app-body {
+    padding: 22px 28px;
+    gap: 16px;
+    max-width: 1040px;
+  }
+
+  /* ── Tile grid → 4 columns on desktop ──────────────────────── */
+  .tile-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+  }
+  .tile { padding: 14px 16px; }
+  .tile .num { font-size: 30px; }
+
+  /* ── Cards ──────────────────────────────────────────────────── */
+  .sk, .sk-2 {
+    border-radius: 14px;
+  }
+  .pad-s { padding: 10px 12px; }
+
+  /* ── Segmented control ──────────────────────────────────────── */
+  .seg { font-size: 12.5px; }
+  .seg > div { padding: 7px 0; }
+
+  /* ── Tabs ───────────────────────────────────────────────────── */
+  .tabs > div { font-size: 13px; padding: 8px 14px 9px; }
+
+  /* ── FAB ────────────────────────────────────────────────────── */
+  .wf-fab { right: 28px; bottom: 28px; width: 56px; height: 56px; font-size: 28px; }
+
+  /* ── Toast ──────────────────────────────────────────────────── */
+  .app-toast {
+    left: auto;
+    right: 28px;
+    bottom: 28px;
+    width: 300px;
+    border-radius: 14px;
+    font-size: 13.5px;
+  }
+
+  /* ── Sheet ──────────────────────────────────────────────────── */
+  .app-scrim { position: fixed; }
+  .app-sheet {
+    width: 420px;
+    margin: 0 auto;
+    border-radius: 16px 16px 0 0;
+  }
+
+  /* ── Buttons ────────────────────────────────────────────────── */
+  .wf-btn { font-size: 14px; padding: 8px 16px; border-radius: 9px; }
+  .wf-btn.sm { font-size: 12.5px; padding: 6px 13px; }
+
+  /* ── Sections label ─────────────────────────────────────────── */
+  .seclabel { font-size: 11px; letter-spacing: 0.7px; }
+
+  /* ── Chip ───────────────────────────────────────────────────── */
+  .chip { font-size: 11.5px; padding: 3px 9px; }
+  .chip.xs { font-size: 10.5px; padding: 2px 7px; }
+
+  /* ── Timeline ───────────────────────────────────────────────── */
+  .tl { padding-left: 22px; }
+
+  /* ── Search ─────────────────────────────────────────────────── */
+  .wf-search { font-size: 14px; padding: 10px 14px; border-radius: 12px; }
+
+  /* ── PDF bar ────────────────────────────────────────────────── */
+  .pdfbar { font-size: 13px; padding: 8px 14px; }
+
+  /* ── Login page (web centered card) ────────────────────────── */
+  .login-card {
+    max-width: 400px;
+    margin: auto;
+    border-radius: 20px;
+    box-shadow: 0 8px 32px rgba(0,0,0,.12), 0 2px 8px rgba(0,0,0,.06);
+  }
+
+  /* ── Back button ────────────────────────────────────────────── */
+  .wf-appbar .tap { font-size: 22px; }
+}
+
+@media (min-width: 1100px) {
+  .wf-tabbar { width: 240px; flex: 0 0 240px; }
+  .app-body  { padding: 28px 36px; }
+}
+
+@media (min-width: 1400px) {
+  .wf-tabbar { width: 260px; flex: 0 0 260px; }
+  .app-body  { max-width: 1200px; }
+}

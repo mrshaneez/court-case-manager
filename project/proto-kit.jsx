@@ -31,18 +31,26 @@ function AppBar({ title, sub, back, right, titleDv }) {
   );
 }
 
-/* role-aware bottom tab bar */
+/* role-aware bottom tab bar / desktop sidebar */
 const TABS = [
-  ["home", "Home", "⌂"],
-  ["docket", "Docket", "≣"],
+  ["home",     "Home",     "⌂"],
+  ["docket",   "Docket",   "≣"],
   ["calendar", "Calendar", "▦"],
   ["requests", "Requests", "⇄"],
-  ["more", "More", "⋯"],
+  ["more",     "More",     "⋯"],
 ];
 function TabBar({ active, badges = {} }) {
   const nav = useNav();
   return (
     <div className="wf-tabbar" style={{ flex: "0 0 auto" }}>
+      {/* Sidebar brand — visible only on desktop via CSS */}
+      <div className="sidebar-brand">
+        <span className="sidebar-logo">⚖</span>
+        <div>
+          <div className="sidebar-appname">Court Manager</div>
+          <div className="sidebar-role">{nav.role.label}</div>
+        </div>
+      </div>
       {TABS.map(([k, label, ico]) => (
         <div key={k} className={"tab" + (k === active ? " on" : "")} onClick={() => nav.tab(k)}>
           <span className="ico" style={{ position: "relative" }}>{ico}{badges[k] ? <span className="tabbadge">{badges[k]}</span> : null}</span>
