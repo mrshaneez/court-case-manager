@@ -53,8 +53,10 @@ function tiles(items) {
   return (
     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 7 }}>
       {items.map((t, i) => (
-        <Tap key={i} className="tile" style={t.border ? { borderColor: "var(--" + t.border + ")" } : {}} onClick={t.onClick}>
-          <span className="num" style={t.color ? { color: "var(--" + t.color + ")" } : {}}>{t.num}</span>
+        <Tap key={i} className={"tile" + (t.variant ? " tile-" + t.variant : "")}
+          style={!t.variant && t.border ? { borderColor: "var(--" + t.border + ")" } : {}}
+          onClick={t.onClick}>
+          <span className="num" style={!t.variant && t.color ? { color: "var(--" + t.color + ")" } : {}}>{t.num}</span>
           <span className="lbl">{t.lbl}</span>
         </Tap>
       ))}
@@ -68,8 +70,8 @@ function HomeJudge() {
     <Screen bar={<AppBar title="Good morning" sub="Hon. R. Alvarez · Division 4" right={<RoleSwitch />} />}
       bottom={<TabBar active="home" badges={{ requests: 3 }} />}>
       <div className="row" style={{ gap: 7 }}>
-        <Tap className="tile grow" style={{ borderColor: "var(--info)" }} onClick={() => nav.tab("docket")}><span className="num">248</span><span className="lbl">Presiding · my section</span></Tap>
-        <Tap className="tile grow" onClick={() => nav.go("participating", {})}><span className="num">5</span><span className="lbl">Participating · panels</span></Tap>
+        <Tap className="tile grow tile-info" onClick={() => nav.tab("docket")}><span className="num">248</span><span className="lbl">Presiding · my section</span></Tap>
+        <Tap className="tile grow tile-slate" onClick={() => nav.go("participating", {})}><span className="num">5</span><span className="lbl">Participating · panels</span></Tap>
       </div>
       <SecLabel right="Courtroom 4B"><span style={{ color: "var(--info)" }}>Presiding · today</span></SecLabel>
       <div className="sk-2 pad-s" style={{ borderColor: "var(--info)" }}>
@@ -90,10 +92,10 @@ function HomeChief() {
     <Screen bar={<AppBar title="Good morning" sub="Chief Judge · court-wide" right={<RoleSwitch />} />}
       bottom={<TabBar active="home" badges={{ requests: 3 }} />}>
       {tiles([
-        { num: "1,204", lbl: "All cases · 7 sections", onClick: () => nav.tab("docket") },
-        { num: "94%", lbl: "Clearance rate", onClick: () => nav.go("stats", {}) },
-        { num: "34", lbl: "Overdue court-wide", color: "urgent", border: "urgent" },
-        { num: "11", lbl: "Approvals pending" },
+        { num: "1,204", lbl: "All cases · 7 sections", variant: "info", onClick: () => nav.tab("docket") },
+        { num: "94%",   lbl: "Clearance rate",         variant: "ok",   onClick: () => nav.go("stats", {}) },
+        { num: "34",    lbl: "Overdue court-wide",      variant: "urgent" },
+        { num: "11",    lbl: "Approvals pending",       variant: "amber" },
       ])}
       <SecLabel>Sections needing attention</SecLabel>
       <div className="sk pad-s tight">
@@ -112,10 +114,10 @@ function HomeClerk() {
     <Screen bar={<AppBar title="Good morning" sub="J. Mensah · Clerk · Div 4" right={<RoleSwitch />} />}
       bottom={<TabBar active="home" badges={{ requests: 3 }} />}>
       {tiles([
-        { num: "14", lbl: "Filings to docket", onClick: () => nav.go("filings", {}) },
-        { num: "6", lbl: "Orders to prepare", onClick: () => nav.go("docgen", {}) },
-        { num: "9", lbl: "Requests to process", color: "warn", border: "warn", onClick: () => nav.go("requests", {}) },
-        { num: "4", lbl: "Hearings to set up", onClick: () => nav.go("schedule", {}) },
+        { num: "14", lbl: "Filings to docket",    variant: "amber",  onClick: () => nav.go("filings", {}) },
+        { num: "6",  lbl: "Orders to prepare",    variant: "purple", onClick: () => nav.go("docgen", {}) },
+        { num: "9",  lbl: "Requests to process",  variant: "urgent", onClick: () => nav.go("requests", {}) },
+        { num: "4",  lbl: "Hearings to set up",   variant: "cyan",   onClick: () => nav.go("schedule", {}) },
       ])}
       <SecLabel>Filings inbox · to docket</SecLabel>
       <Tap className="sk pad-s" onClick={() => nav.go("filings", {})}>
@@ -242,9 +244,9 @@ function PriorityBoard() {
     <>
       <SecLabel right={canCreate ? <span className="tap" style={{ color: "var(--info)", fontWeight: 700 }} onClick={() => nav.sheet("create")}>＋ New</span> : "prioritized"}>Priorities</SecLabel>
       <div className="row" style={{ gap: 6, flex: "0 0 auto" }}>
-        <Tap className="sk-soft pad-s grow center" onClick={() => nav.go("tasks", {})}><div className="b lg" style={{ color: "var(--urgent)" }}>{b.overdue.length}</div><div className="tiny muted">Overdue</div></Tap>
-        <Tap className="sk-soft pad-s grow center" onClick={() => nav.go("tasks", {})}><div className="b lg">{b.pending}</div><div className="tiny muted">Pending tasks</div></Tap>
-        <Tap className="sk-soft pad-s grow center" onClick={() => nav.go("requests", {})}><div className="b lg" style={{ color: "#a8651a" }}>{b.reqs}</div><div className="tiny muted">Open requests</div></Tap>
+        <Tap className="tile tile-urgent grow center" onClick={() => nav.go("tasks", {})}><div className="b lg">{b.overdue.length}</div><div className="tiny" style={{opacity:.82}}>Overdue</div></Tap>
+        <Tap className="tile tile-info grow center" onClick={() => nav.go("tasks", {})}><div className="b lg">{b.pending}</div><div className="tiny" style={{opacity:.82}}>Pending tasks</div></Tap>
+        <Tap className="tile tile-amber grow center" onClick={() => nav.go("requests", {})}><div className="b lg">{b.reqs}</div><div className="tiny" style={{opacity:.82}}>Open requests</div></Tap>
       </div>
       <div className="sk pad-s tight">
         {b.overdue.map((t, i) => (
