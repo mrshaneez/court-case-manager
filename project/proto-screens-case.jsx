@@ -157,15 +157,24 @@ function Case({ params }) {
   );
 }
 
-/* shared task item with toggle */
+/* shared task item with toggle — done state persists in localStorage */
 function TaskItem({ t, divide }) {
   const nav = useNav();
-  const [done, setDone] = React.useState(t.done);
+  const sk = "ccm_task_" + t.id;
+  const [done, setDone] = React.useState(() => {
+    try { const v = localStorage.getItem(sk); return v !== null ? JSON.parse(v) : t.done; } catch { return t.done; }
+  });
+  const toggle = () => {
+    const nd = !done;
+    setDone(nd);
+    try { localStorage.setItem(sk, JSON.stringify(nd)); } catch {}
+    nav.toast(nd ? "Task completed" : "Marked open", nd ? "ok" : "");
+  };
   return (
     <>
       {divide && <div className="divide"></div>}
       <div className="row" style={{ padding: "5px 0", gap: 8 }}>
-        <span className={"cbox tap" + (done ? " done" : "")} onClick={() => { setDone(!done); nav.toast(done ? "Marked open" : "Task completed", done ? "" : "ok"); }}>{done ? "✓" : ""}</span>
+        <span className={"cbox tap" + (done ? " done" : "")} onClick={toggle}>{done ? "✓" : ""}</span>
         <Tap className="grow" onClick={() => t.case && CASES[t.case] && nav.go("case", { id: t.case })}>
           <div className={"sm trunc" + (done ? " muted" : " b")} style={done ? { textDecoration: "line-through" } : {}}>{t.label}</div>
           <div className="tiny muted trunc">{t.case}</div>

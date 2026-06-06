@@ -134,7 +134,13 @@ function RequestDetail({ params }) {
 
 function Filings() {
   const nav = useNav();
-  const [done, setDone] = React.useState({});
+  const [done, setDone] = React.useState(() => {
+    try { return JSON.parse(localStorage.getItem("ccm_filings")) || {}; } catch { return {}; }
+  });
+  const markDone = (id) => {
+    const nd = (d) => { const r = { ...d, [id]: 1 }; try { localStorage.setItem("ccm_filings", JSON.stringify(r)); } catch {} return r; };
+    setDone(nd);
+  };
   return (
     <Screen bar={<AppBar back title="Filings intake" sub="14 pending · Division 4" right={<RoleSwitch />} />}>
       <div className="seg" style={{ flex: "0 0 auto" }}><div className="on">Pending 14</div><div onClick={() => nav.toast("Docketed filings")}>Docketed</div><div onClick={() => nav.toast("Returned filings")}>Returned</div></div>
@@ -144,8 +150,8 @@ function Filings() {
           <div className="sm b trunc" style={{ margin: "3px 0 1px" }}>{f.title}</div>
           <div className="tiny muted trunc">{CASES[f.case] ? CASES[f.case].short : f.case} · {f.who}</div>
           <div className="row" style={{ gap: 6, marginTop: 6 }}>
-            <Tap className="wf-btn sm info" onClick={() => { setDone((d) => ({ ...d, [f.id]: 1 })); nav.toast("Filing docketed", "ok"); }}>Docket</Tap>
-            <Tap className="wf-btn sm" onClick={() => { setDone((d) => ({ ...d, [f.id]: 1 })); nav.toast("Returned to filer"); }}>Return</Tap>
+            <Tap className="wf-btn sm info" onClick={() => { markDone(f.id); nav.toast("Filing docketed", "ok"); }}>Docket</Tap>
+            <Tap className="wf-btn sm" onClick={() => { markDone(f.id); nav.toast("Returned to filer"); }}>Return</Tap>
             <Tap className="wf-btn sm" onClick={() => nav.toast("Referred to judge")}>Refer</Tap>
           </div>
         </div>
@@ -173,9 +179,11 @@ function Schedule({ params }) {
       </div>
       <span className="seclabel">Courtroom</span>
       <div className="row" style={{ gap: 6 }}>
-        {[["4B", "busy"], ["2A", ""], ["3C", ""]].map(([r, b]) => (
-          <span key={r} className={"room tap" + (room === r ? " on" : b ? " busy" : "")} onClick={() => setRoom(r)}>{r}<span className="cap">{b || "free"}</span></span>
-        ))}
+        {((() => { try { const v = localStorage.getItem("ccm_rooms"); return v ? JSON.parse(v) : COURTROOMS; } catch { return COURTROOMS; } })()).map((rm) => {
+          const id = rm.name.replace("Courtroom ", "");
+          const busy = rm.status === "In session";
+          return <span key={id} className={"room tap" + (room === id ? " on" : busy ? " busy" : "")} onClick={() => setRoom(id)}>{id}<span className="cap">{busy ? "busy" : "free"}</span></span>;
+        })}
         <span className="room add tap" onClick={() => nav.toast("Only admins add rooms")}>＋</span>
       </div>
       <SecLabel>Participants · auto-checked</SecLabel>

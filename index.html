@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Court Case Manager</title>
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body class="wf-font-opensans">
+<div id="root"></div>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+<script type="text/babel" src="project/proto-data.jsx"></script>
+<script type="text/babel" src="project/proto-kit.jsx"></script>
+<script type="text/babel" src="project/proto-screens-home.jsx"></script>
+<script type="text/babel" src="project/proto-screens-case.jsx"></script>
+<script type="text/babel" src="project/proto-screens-work.jsx"></script>
+<script type="text/babel" src="project/proto-screens-misc.jsx"></script>
+<script type="text/babel" src="project/proto-screens-admin.jsx"></script>
+
+<script type="text/babel">
+const { useState, useRef, useCallback, useEffect } = React;
+
+/* ── localStorage persistence helpers ── */
+function load(key, fallback) {
+  try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : fallback; } catch { return fallback; }
+}
+function save(key, val) { try { localStorage.setItem(key, JSON.stringify(val)); } catch {} }
+
+const REG = {
+  home: Home, docket: Docket, calendar: Calendar, requests: Requests, more: More,
+  case: Case, participating: Participating, tasks: Tasks, requestDetail: RequestDetail,
+  timeline: Timeline,
+  filings: Filings, schedule: Schedule, documents: Documents, viewer: Viewer,
+  people: People, person: Person, messages: Messages, thread: Thread,
+  notifications: Notifications, stats: Stats, assistant: Assistant, docgen: DocGen,
+  newRequest: NewRequest, newSubmission: NewSubmission, newTask: NewTask, newTarget: NewTarget, newDocument: NewDocument,
+  courtrooms: Courtrooms, sections: Sections, access: AccessAdmin, userAccess: UserAccess, inviteParty: InviteParty, newCase: NewCase,
+};
+const TAB_ROOTS = ["home", "docket", "calendar", "requests", "more"];
+
+function App() {
+  const [authed, setAuthed] = useState(false);
+  const [roleId, setRoleId] = useState("judge");
+  const [stack, setStack] = useState([{ screen: "home", params: {} }]);
+  const [sheet, setSheet] = useState(null);
+  const [toast, setToast] = useState(null);
+  const dir = useRef("fwd");
+  const toastTimer = useRef(null);
+
+  /* persisted state */
+  const [tasks, setTasks] = useState(() => load("ccm_tasks", TASKS));
+  const [courtrooms, setCourtrooms] = useState(() => load("ccm_rooms", COURTROOMS));
+  const [requests, setRequests] = useState(() => load("ccm_requests", REQUESTS));
+
+  useEffect(() => { save("ccm_tasks", tasks); }, [tasks]);
+  useEffect(() => { save("ccm_rooms", courtrooms); }, [courtrooms]);
+  useEffect(() => { save("ccm_requests", requests); }, [requests]);
+
+  /* expose mutable state to window so existing JSX components can access it */
+  useEffect(() => {
+    window.__setTasks = setTasks;
+    window.__tasks = tasks;
+    window.__setCourtrooms = setCourtrooms;
+    window.__courtrooms = courtrooms;
+    window.__setRequests = setRequests;
+    window.__requests = requests;
+  });
+
+  const showToast = useCallback((text, k = "") => {
+    setToast({ text, k });
+    clearTimeout(toastTimer.current);
+    toastTimer.current = setTimeout(() => setToast(null), 1900);
+  }, []);
+
+  const nav = {
+    role: ROLES[roleId],
+    canBack: stack.length > 1,
+    go(screen, params = {}) {
+      if (!screen || !REG[screen]) { showToast("Coming soon"); return; }
+      dir.current = "fwd";
+      setStack((s) => [...s, { screen, params }]);
+    },
+    back() {
+      dir.current = "back";
+      setStack((s) => (s.length > 1 ? s.slice(0, -1) : s));
+    },
+    tab(k) {
+      dir.current = "fwd";
+      setStack([{ screen: k, params: {} }]);
+    },
+    sheet(name) { setSheet(name); },
+    closeSheet() { setSheet(null); },
+    toast: showToast,
+    setRole(id) { setRoleId(id); setSheet(null); setStack([{ screen: "home", params: {} }]); },
+    login(id) { setRoleId(id); setAuthed(true); setStack([{ screen: "home", params: {} }]); },
+    logout() { setAuthed(false); setSheet(null); setStack([{ screen: "home", params: {} }]); },
+  };
+
+  if (!authed) {
+    return (
+      <NavCtx.Provider value={nav}>
+        <div className="app-phone"><Login /></div>
+      </NavCtx.Provider>
+    );
+  }
+
+  const top = stack[stack.length - 1];
+  const Comp = REG[top.screen] || Home;
+
+  return (
+    <NavCtx.Provider value={nav}>
+      <div className="app-phone">
+        <div className={"app-screen screen-anim " + (dir.current === "back" ? "back" : "")} key={stack.length + ":" + top.screen}>
+          <Comp params={top.params} />
+        </div>
+
+        {toast && (
+          <div className={"app-toast " + toast.k}>
+            <span className="b">{toast.k === "ok" ? "✓" : toast.k === "urgent" ? "!" : "›"}</span>
+            <span className="grow">{toast.text}</span>
+          </div>
+        )}
+
+        {sheet === "role" && <RoleSheet nav={nav} />}
+        {sheet === "clash" && <ClashSheet nav={nav} />}
+        {sheet === "create" && <CreateSheet nav={nav} />}
+      </div>
+    </NavCtx.Provider>
+  );
+}
+
+function RoleSheet({ nav }) {
+  const [pwFor, setPwFor] = React.useState(null);
+  const [pw, setPw] = React.useState("");
+  const [err, setErr] = React.useState(false);
+  const pick = (r) => {
+    if (r.privileged && nav.role.id !== r.id) { setPwFor(r.id); setPw(""); setErr(false); }
+    else nav.setRole(r.id);
+  };
+  const confirmPw = () => {
+    if (pw === ADMIN_PASSWORD) nav.setRole(pwFor);
+    else setErr(true);
+  };
+  return (
+    <div className="app-scrim" onClick={() => nav.closeSheet()}>
+      <div className="app-sheet" onClick={(e) => e.stopPropagation()}>
+        <span className="grab"></span>
+        <div className="b" style={{ fontSize: 15 }}>Switch role — demo as</div>
+        <div className="tiny muted" style={{ marginTop: -4 }}>Each role sees a different app: dashboard, scope, powers.</div>
+        {Object.values(ROLES).map((r) => (
+          <React.Fragment key={r.id}>
+            <div className={"tap row sk pad-s" + (nav.role.id === r.id ? " sk-2" : "")}
+              style={{ gap: 10, ...(nav.role.id === r.id ? { borderColor: "var(--info)" } : {}) }}
+              onClick={() => pick(r)}>
+              <span className="av" style={{ width: 32, height: 32, ...(r.privileged ? { borderColor: "var(--info)", color: "var(--info)" } : {}) }}>{r.short}</span>
+              <div className="grow">
+                <div className="sm b">{r.label}{r.privileged && <span className="chip xs info" style={{ marginLeft: 6 }}>🔒</span>}</div>
+                <div className="tiny muted">{r.name} · {r.sub}</div>
+              </div>
+              {nav.role.id === r.id
+                ? <span className="chip xs info">Current</span>
+                : <span className="muted b" style={{ fontSize: 15 }}>›</span>}
+            </div>
+            {pwFor === r.id && (
+              <div className="sk-2 pad-s" style={{ borderColor: err ? "var(--urgent)" : "var(--info)", display: "flex", flexDirection: "column", gap: 7 }}>
+                <span className="seclabel">Global Admin password</span>
+                <input type="password" value={pw} autoFocus placeholder="Enter password"
+                  onChange={(e) => { setPw(e.target.value); setErr(false); }}
+                  onKeyDown={(e) => { if (e.key === "Enter") confirmPw(); }}
+                  style={{ border: "1.5px solid " + (err ? "var(--urgent)" : "var(--line)"), borderRadius: 9, padding: "7px 9px", font: "inherit", fontSize: 14, outline: "none", background: "var(--paper-2)", color: "var(--ink)", width: "100%", boxSizing: "border-box" }} />
+                {err && <span className="tiny" style={{ color: "var(--urgent)" }}>Incorrect password.</span>}
+                <Tap className="wf-btn sm info block" onClick={confirmPw}>Unlock admin</Tap>
+              </div>
+            )}
+          </React.Fragment>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function ClashSheet({ nav }) {
+  return (
+    <div className="app-scrim" onClick={() => nav.closeSheet()}>
+      <div className="app-sheet" onClick={(e) => e.stopPropagation()}>
+        <span className="grab"></span>
+        <div className="row" style={{ gap: 7 }}>
+          <span style={{ fontSize: 18, color: "var(--urgent)" }}>⚠</span>
+          <div className="grow">
+            <div className="b">Scheduling conflict</div>
+            <div className="tiny muted">Jun 11 · 9:00 AM · Courtroom 2A</div>
+          </div>
+        </div>
+        <div className="clash">
+          <span className="warn-ico">●</span>
+          <div className="grow"><div className="sm b">Counsel double-booked</div><div className="tiny muted">A. Lin — CR-1187 at 9:30</div></div>
+        </div>
+        <div className="clash">
+          <span className="warn-ico">●</span>
+          <div className="grow"><div className="sm b">Party clash</div><div className="tiny muted">R. Mercado has a deposition 9–11 AM</div></div>
+        </div>
+        <div className="tiny muted">Proceeding notifies affected participants to confirm or request a change.</div>
+        <div className="tap wf-btn sm block info" onClick={() => nav.closeSheet()}>Pick another slot</div>
+        <div className="tap wf-btn sm block" style={{ borderColor: "var(--urgent)", color: "var(--urgent)" }}
+          onClick={() => { nav.closeSheet(); nav.toast("Scheduled — participants notified", "ok"); nav.back(); }}>
+          Proceed anyway &amp; notify
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function CreateSheet({ nav }) {
+  const opt = (ico, label, sub, screen) => (
+    <div className="tap row sk pad-s" style={{ gap: 10 }} onClick={() => { nav.closeSheet(); nav.go(screen, {}); }}>
+      <span className="ico-ph" style={{ width: 32, height: 32, fontSize: 15 }}>{ico}</span>
+      <div className="grow"><div className="sm b">{label}</div><div className="tiny muted">{sub}</div></div>
+      <span className="muted b" style={{ fontSize: 15 }}>›</span>
+    </div>
+  );
+  return (
+    <div className="app-scrim" onClick={() => nav.closeSheet()}>
+      <div className="app-sheet" onClick={(e) => e.stopPropagation()}>
+        <span className="grab"></span>
+        <div className="b" style={{ fontSize: 15 }}>Create</div>
+        {opt("✓", "New task", "Assign to a case, with a due date", "newTask")}
+        {opt("◎", "New target", "Goal for a case, section or court", "newTarget")}
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+</script>
+</body>
+</html>

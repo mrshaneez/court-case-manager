@@ -266,14 +266,18 @@ function AdminHome() {
 /* ───── Courtroom manager ───── */
 function Courtrooms() {
   const nav = useNav();
-  const [rooms, setRooms] = React.useState(COURTROOMS);
+  const [rooms, setRooms] = React.useState(() => {
+    try { const v = localStorage.getItem("ccm_rooms"); return v ? JSON.parse(v) : COURTROOMS; } catch { return COURTROOMS; }
+  });
   const [adding, setAdding] = React.useState(false);
   const [nm, setNm] = React.useState("");
   const [cap, setCap] = React.useState("");
   const fld = { border: "1.5px solid var(--line)", borderRadius: 9, padding: "7px 9px", font: "inherit", fontSize: 13, outline: "none", background: "var(--paper)", color: "var(--ink)", width: "100%", boxSizing: "border-box" };
   const confirmAdd = () => {
     if (!nm) return;
-    setRooms((r) => [...r, { name: nm, cap: Number(cap) || 40, status: "Available", k: "ok", util: 0 }]);
+    const newRooms = [...rooms, { name: nm, cap: Number(cap) || 40, status: "Available", k: "ok", util: 0 }];
+    setRooms(newRooms);
+    try { localStorage.setItem("ccm_rooms", JSON.stringify(newRooms)); } catch {}
     nav.toast("Courtroom added", "ok"); setNm(""); setCap(""); setAdding(false);
   };
   return (
