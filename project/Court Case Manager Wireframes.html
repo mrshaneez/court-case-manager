@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Court Case Manager — Wireframes</title>
+<link rel="stylesheet" href="wireframe.css" />
+<style>
+  html, body { margin: 0; height: 100%; background: #f0eee9; }
+  #root { height: 100%; }
+</style>
+</head>
+<body class="wf-font-kalam">
+<div id="root"></div>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+<script type="text/babel" src="design-canvas.jsx"></script>
+<script type="text/babel" src="tweaks-panel.jsx"></script>
+<script type="text/babel" src="wireframe-kit.jsx"></script>
+<script type="text/babel" src="screens-dashboard.jsx"></script>
+<script type="text/babel" src="screens-roledash.jsx"></script>
+<script type="text/babel" src="screens-detail.jsx"></script>
+<script type="text/babel" src="screens-work.jsx"></script>
+<script type="text/babel" src="screens-people.jsx"></script>
+<script type="text/babel" src="screens-ai.jsx"></script>
+<script type="text/babel" src="screens-schedule.jsx"></script>
+<script type="text/babel" src="screens-portal.jsx"></script>
+<script type="text/babel" src="screens-parties.jsx"></script>
+<script type="text/babel" src="screens-scope.jsx"></script>
+<script type="text/babel" src="screens-filings.jsx"></script>
+<script type="text/babel" src="screens-notifications.jsx"></script>
+<script type="text/babel" src="screens-chat.jsx"></script>
+<script type="text/babel" src="screens-docgen.jsx"></script>
+<script type="text/babel" src="screens-viewer.jsx"></script>
+<script type="text/babel" src="screens-deadlines.jsx"></script>
+<script type="text/babel" src="screens-targets.jsx"></script>
+
+<script type="text/babel">
+const { useEffect } = React;
+
+const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+  "font": "Clean",
+  "edges": "Clean",
+  "accent": "#3f7d78",
+  "notes": true
+}/*EDITMODE-END*/;
+
+const FONT_CLASS = { Hand: "kalam", Sketch: "architects", Clean: "clean" };
+
+// One artboard = one phone screen. Returns a REAL DCArtboard element so
+// DCSection's type check (type === DCArtboard) sees it.
+function ab(id, label, Comp) {
+  return (
+    <DCArtboard key={id} id={id} label={label} width={300} height={620}
+      style={{ background: "transparent", boxShadow: "none" }}>
+      <Comp />
+    </DCArtboard>
+  );
+}
+
+function App() {
+  const [t, setTweak] = useTweaks(TWEAK_DEFAULTS);
+
+  useEffect(() => {
+    const b = document.body;
+    b.classList.toggle("wf-clean-edges", t.edges === "Clean");
+    b.classList.toggle("wf-no-notes", !t.notes);
+    const fc = FONT_CLASS[t.font] || "kalam";
+    ["kalam", "architects", "clean"].forEach((f) => b.classList.toggle("wf-font-" + f, f === fc));
+    b.style.setProperty("--info", t.accent);
+  }, [t.edges, t.notes, t.font, t.accent]);
+
+  return (
+    <>
+      <DesignCanvas>
+        <DCSection id="dashboard" title="Dashboard / Overview" subtitle="Where the user lands — three takes on what comes first.">
+          {ab("dash-a", "A · Command center", DashA)}
+          {ab("dash-b", "B · Agenda-first", DashB)}
+          {ab("dash-c", "C · Action inbox", DashC)}
+          {ab("dash-d", "D · Presiding vs participating", DashD)}
+        </DCSection>
+
+        <DCSection id="roledash" title="Role-based Dashboards" subtitle="The home screen adapts to the signed-in role — each surfaces what that person acts on, scope-respecting.">
+          {ab("rd-chief", "Chief Judge · court-wide", DashChief)}
+          {ab("rd-judge", "Judge · presiding + participating", DashD)}
+          {ab("rd-clerk", "Clerk / Staff · work queue", DashClerk)}
+          {ab("rd-counsel", "Counsel · assigned cases", DashCounsel)}
+          {ab("rd-party", "Party · my cases", DashParty)}
+        </DCSection>
+
+        <DCSection id="docket" title="Docket / Case list" subtitle="Browsing hundreds of cases — density vs. grouping vs. priority.">
+          {ab("docket-a", "A · Dense list + filters", DocketA)}
+          {ab("docket-b", "B · Grouped by status", DocketB)}
+          {ab("docket-c", "C · Priority cards", DocketC)}
+        </DCSection>
+
+        <DCSection id="scope" title="Case Visibility &amp; Scope" subtitle="Chief judge sees all sections; a judge sees their own section plus participating cases they're assigned to; parties see only their cases.">
+          {ab("scope-a", "A · Judge scope switcher", ScopeA)}
+          {ab("scope-b", "B · Chief judge — court-wide", ScopeB)}
+          {ab("scope-c", "C · Who-sees-what model", ScopeC)}
+        </DCSection>
+
+        <DCSection id="case" title="Case detail" subtitle="A single case — how the file is organized.">
+          {ab("case-a", "A · Tabbed", CaseA)}
+          {ab("case-b", "B · Scroll + sections", CaseB)}
+          {ab("case-c", "C · Docket timeline", CaseC)}
+        </DCSection>
+
+        <DCSection id="parties" title="Case Parties &amp; Assignment" subtitle="Many-to-many: any number of judges (a panel), claimants, respondents, lawyers, firms &amp; representatives per case.">
+          {ab("parties-a", "A · Roster (grouped by role)", PartiesA)}
+          {ab("parties-b", "B · Assign (search + multi-add)", PartiesB)}
+          {ab("parties-c", "C · Two sides + panel", PartiesC)}
+        </DCSection>
+
+        <DCSection id="docs" title="Documents" subtitle="The document library across cases.">
+          {ab("docs-a", "A · File list", DocsA)}
+          {ab("docs-b", "B · Folder grid", DocsB)}
+          {ab("docs-c", "C · Quick access + scan", DocsC)}
+        </DCSection>
+
+        <DCSection id="docgen" title="Document Generator &amp; Editor" subtitle="Staff generate orders &amp; documents from uploaded Word samples, then edit Word-style with formatting &amp; language options — including Dhivehi (Thaana, RTL).">
+          {ab("docgen-a", "A · Templates from Word samples", DocGenA)}
+          {ab("docgen-b", "B · Word-like editor", DocGenB)}
+          {ab("docgen-c", "C · Dhivehi (Thaana, RTL)", DocGenC)}
+          {ab("docgen-d", "D · Header & footer from sample", DocGenD)}
+          {ab("docgen-e", "E · Editor with header/footer", DocGenE)}
+        </DCSection>
+
+        <DCSection id="viewer" title="Document Viewer" subtitle="View uploaded documents in-app, Adobe-Reader style — page navigation, zoom, search, thumbnails, highlight &amp; sign.">
+          {ab("viewer-a", "A · Reader", ViewerA)}
+          {ab("viewer-b", "B · Annotate &amp; sign", ViewerB)}
+          {ab("viewer-c", "C · Thumbnails + search", ViewerC)}
+        </DCSection>
+
+        <DCSection id="tasks" title="Tasks" subtitle="Things to do, tied to cases & deadlines.">
+          {ab("tasks-a", "A · By due date", TasksA)}
+          {ab("tasks-b", "B · Kanban board", TasksB)}
+          {ab("tasks-c", "C · By priority", TasksC)}
+        </DCSection>
+
+        <DCSection id="deadlines" title="Due Dates &amp; Deadlines" subtitle="Due dates attach to both tasks and cases — set them, track a case's own target dates, and see everything by urgency.">
+          {ab("due-a", "A · Set due date (picker)", DueA)}
+          {ab("due-b", "B · Case deadlines", DueB)}
+          {ab("due-c", "C · Unified deadline list", DueC)}
+        </DCSection>
+
+        <DCSection id="cal" title="Calendar / Hearings" subtitle="Schedules, courtrooms & the cause list.">
+          {ab("cal-a", "A · Month + agenda", CalA)}
+          {ab("cal-b", "B · Agenda list", CalB)}
+          {ab("cal-c", "C · Courtroom lanes", CalC)}
+        </DCSection>
+
+        <DCSection id="schedule" title="Scheduling &amp; Clash Check" subtitle="3 courtrooms (admin can add more). Party, counsel &amp; room clashes are auto-detected; scheduler confirms to proceed.">
+          {ab("sched-a", "A · Schedule form (inline clash)", SchedA)}
+          {ab("sched-b", "B · Conflict → confirm sheet", SchedB)}
+          {ab("sched-c", "C · Courtroom manager (admin)", SchedC)}
+        </DCSection>
+
+        <DCSection id="stats" title="Statistics" subtitle="Caseload insight — overview vs. trends vs. scorecard.">
+          {ab("stats-a", "A · KPIs + charts", StatsA)}
+          {ab("stats-b", "B · Trends + breakdown", StatsB)}
+          {ab("stats-c", "C · Targets scorecard", StatsC)}
+        </DCSection>
+
+        <DCSection id="targets" title="Shared Targets" subtitle="A target can be shared with other sections — everyone it's shared with sees the same live progress; the owner edits.">
+          {ab("target-a", "A · Target detail (owner)", TargetA)}
+          {ab("target-b", "B · Share with sections", TargetB)}
+          {ab("target-c", "C · Shared targets overview", TargetC)}
+        </DCSection>
+        <DCSection id="people" title="People &amp; Roles" subtitle="One judge = one section. Manage staff, judges, lawyers, firms, parties — with role-based access.">
+          {ab("people-a", "A · Directory by role", PeopleA)}
+          {ab("people-b", "B · Access & permissions", PeopleB)}
+          {ab("people-c", "C · Firm / party profile", PeopleC)}
+        </DCSection>
+
+        <DCSection id="requests" title="Requests" subtitle="Parties, lawyers &amp; firms file adjournment &amp; other requests within assigned cases; judge / staff decide.">
+          {ab("req-a", "A · Request inbox (decide)", ReqA)}
+          {ab("req-b", "B · Submit a request", ReqB)}
+          {ab("req-c", "C · Request thread / decision", ReqC)}
+        </DCSection>
+
+        <DCSection id="filings" title="Filings &amp; Submissions" subtitle="Parties file motions, applications, submissions &amp; pleadings into their cases; the clerk dockets and the judge rules.">
+          {ab("filing-a", "A · Party filings hub", FilingA)}
+          {ab("filing-b", "B · New submission form", FilingB)}
+          {ab("filing-c", "C · Court intake / review", FilingC)}
+        </DCSection>
+
+        <DCSection id="portal" title="Party / Counsel Portal" subtitle="The external signed-in view — a party, lawyer, claimant or respondent sees only their assigned cases, status, and the documents &amp; tasks shared with them.">
+          {ab("portal-a", "A · My cases (home)", PortalA)}
+          {ab("portal-b", "B · Case status (external)", PortalB)}
+          {ab("portal-c", "C · Shared docs & tasks", PortalC)}
+        </DCSection>
+
+        <DCSection id="ai" title="AI Assistant" subtitle="Available to any user, scoped to their assigned role — same bot, different powers &amp; data per role.">
+          {ab("ai-a", "A · Role-aware chat (Counsel)", AiA)}
+          {ab("ai-b", "B · Quick-ask answer (Judge)", AiB)}
+          {ab("ai-c", "C · Agentic draft & confirm", AiC)}
+        </DCSection>
+
+        <DCSection id="notifications" title="Notifications" subtitle="App-wide &amp; role-aware — deadlines, hearings, clashes, filings, requests &amp; decisions all notify the right people across push, email &amp; in-app.">
+          {ab("notif-a", "A · Notification center", NotifA)}
+          {ab("notif-b", "B · In-context delivery", NotifB)}
+          {ab("notif-c", "C · Preferences", NotifC)}
+        </DCSection>
+
+        <DCSection id="messaging" title="Messaging" subtitle="In-app chat — judge ↔ judge, judge ↔ staff, and party / counsel ↔ staff. Parties reach the court through staff, never judges directly.">
+          {ab("chat-a", "A · Conversations inbox", ChatA)}
+          {ab("chat-b", "B · Chat thread (case-linked)", ChatB)}
+          {ab("chat-c", "C · Role-aware recipients", ChatC)}
+        </DCSection>
+      </DesignCanvas>
+
+      <TweaksPanel>
+        <TweakSection label="Hand / fidelity" />
+        <TweakRadio label="Lettering" value={t.font} options={["Hand", "Sketch", "Clean"]}
+          onChange={(v) => setTweak("font", v)} />
+        <TweakRadio label="Edges" value={t.edges} options={["Sketchy", "Clean"]}
+          onChange={(v) => setTweak("edges", v)} />
+        <TweakToggle label="Annotations" value={t.notes} onChange={(v) => setTweak("notes", v)} />
+        <TweakSection label="Accent" />
+        <TweakColor label="Status / accent" value={t.accent}
+          options={["#4a6fa5", "#7a5a86", "#3f7d78", "#33302b"]}
+          onChange={(v) => setTweak("accent", v)} />
+      </TweaksPanel>
+    </>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+</script>
+</body>
+</html>

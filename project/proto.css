@@ -1,0 +1,87 @@
+/* Prototype-only styles — builds on wireframe.css. Interactive states,
+   screen transitions, phone centering, role switcher, toasts. */
+
+html, body { margin: 0; height: 100%; }
+body {
+  background: #e7e4dd;
+  display: flex; align-items: center; justify-content: center;
+  min-height: 100vh; font-family: var(--wf-font);
+}
+
+/* the running app phone — taller, fixed */
+.app-phone {
+  width: 330px; height: 712px;
+  background: var(--paper);
+  border: 3px solid var(--ink);
+  border-radius: 34px;
+  position: relative; overflow: hidden;
+  display: flex; flex-direction: column;
+  box-shadow: 0 12px 40px rgba(0,0,0,.22);
+}
+@media (max-height: 760px) { .app-phone { transform: scale(.92); } }
+@media (max-height: 700px) { .app-phone { transform: scale(.84); } }
+
+.app-screen { flex: 1; position: relative; overflow: hidden; display: flex; flex-direction: column; }
+.app-body { flex: 1; overflow-y: auto; overflow-x: hidden; padding: 11px 13px; display: flex; flex-direction: column; gap: 9px; -webkit-overflow-scrolling: touch; }
+.app-body.tight { gap: 7px; }
+.app-body::-webkit-scrollbar { width: 0; }
+
+/* tappable affordance */
+.tap { cursor: pointer; transition: transform .08s ease, background .12s ease, opacity .12s; -webkit-tap-highlight-color: transparent; }
+.tap:active { transform: scale(.975); opacity: .85; }
+.tap.row-tap:active { background: var(--paper-2); }
+
+/* screen slide transition — animate transform only (no opacity:0 start) so
+   static captures / exports never freeze on a blank frame */
+.screen-anim { animation: slideIn .26s cubic-bezier(.22,.61,.36,1); }
+@keyframes slideIn { from { transform: translateX(14px); } to { transform: translateX(0); } }
+.screen-anim.back { animation: slideBack .26s cubic-bezier(.22,.61,.36,1); }
+@keyframes slideBack { from { transform: translateX(-14px); } to { transform: translateX(0); } }
+
+/* toast */
+.app-toast {
+  position: absolute; left: 14px; right: 14px; bottom: 76px; z-index: 30;
+  border: 2px solid var(--ink); border-radius: 12px; background: var(--ink); color: var(--paper);
+  padding: 9px 12px; font-size: 12px; box-shadow: 0 6px 18px rgba(0,0,0,.28);
+  display: flex; align-items: center; gap: 8px;
+  animation: toastUp .3s ease;
+}
+.app-toast.ok { background: var(--ok); border-color: var(--ok); }
+.app-toast.urgent { background: var(--urgent); border-color: var(--urgent); }
+@keyframes toastUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+/* bottom sheet (interactive) */
+.app-scrim { position: absolute; inset: 0; background: rgba(33,30,26,.45); z-index: 40; display: flex; align-items: flex-end; animation: fadeIn .2s ease; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+.app-sheet {
+  width: 100%; background: var(--paper); border-top: 2.5px solid var(--ink);
+  border-radius: 20px 20px 0 0; padding: 13px 14px 16px; display: flex; flex-direction: column; gap: 9px;
+  animation: sheetUp .28s cubic-bezier(.22,.61,.36,1); max-height: 88%; overflow-y: auto;
+}
+@keyframes sheetUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+.app-sheet .grab { width: 38px; height: 4px; border-radius: 3px; background: var(--line); margin: -2px auto 2px; }
+
+/* role switcher chip in app bar */
+.role-switch { display: inline-flex; align-items: center; gap: 5px; border: 1.5px solid var(--ink); border-radius: 16px; padding: 2px 8px 2px 4px; font-size: 10.5px; background: var(--paper); cursor: pointer; }
+
+/* generic pressable button reuse wf-btn; add active */
+.wf-btn { cursor: pointer; user-select: none; }
+.wf-btn:active { transform: scale(.96); }
+.chip.tap:active { transform: scale(.94); }
+
+/* segmented interactive */
+.seg > div { cursor: pointer; }
+
+/* tab bar pressable */
+.wf-tabbar .tab { cursor: pointer; }
+.wf-tabbar .tab:active { opacity: .6; }
+
+/* badge on tab */
+.tabbadge { position: absolute; top: 2px; left: 50%; transform: translateX(6px); min-width: 14px; height: 14px; padding: 0 3px; border-radius: 8px; background: var(--urgent); color: #fff; font-size: 8.5px; font-weight: 700; display: flex; align-items: center; justify-content: center; border: 1.5px solid var(--paper); }
+
+/* fab pressable */
+.wf-fab { cursor: pointer; transition: transform .1s; }
+.wf-fab:active { transform: scale(.9); }
+
+/* list divider helper used inline */
+.empty { text-align: center; color: var(--ink-soft); font-size: 12px; padding: 30px 10px; }
