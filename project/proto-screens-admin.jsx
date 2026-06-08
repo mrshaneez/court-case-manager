@@ -22,47 +22,49 @@ function Login() {
   return (
     <>
       <StatusBar />
-      <div className="app-screen">
-        <div className="app-body" style={{ justifyContent: "center", gap: 13 }}>
-          <div className="center" style={{ flex: "0 0 auto" }}>
-            <div className="ico-ph" style={{ width: 54, height: 54, fontSize: 25, margin: "0 auto", borderRadius: 14, borderColor: "var(--info)", color: "var(--info)" }}>⚖</div>
-            <div className="b lg" style={{ marginTop: 9 }}>Court Case Manager</div>
-            <div className="tiny muted">{mode === "signin" ? "Sign in with your court email" : "Request an account"}</div>
-          </div>
-          <div className="seg" style={{ flex: "0 0 auto" }}>
-            <div className={mode === "signin" ? "on" : ""} onClick={() => { setMode("signin"); setErr(""); }}>Sign in</div>
-            <div className={mode === "signup" ? "on" : ""} onClick={() => { setMode("signup"); setErr(""); }}>Sign up</div>
-          </div>
-          <div className="sk pad" style={{ flex: "0 0 auto", display: "flex", flexDirection: "column", gap: 9 }}>
-            {mode === "signup" && (
-              <div className="col" style={{ gap: 3 }}><span className="seclabel">Full name</span>
-                <input value={name} placeholder="Your name" onChange={(e) => { setName(e.target.value); setErr(""); }} style={fld(false)} />
+      <div className="app-screen login-screen">
+        <div className="app-body" style={{ justifyContent: "center", alignItems: "center", gap: 0 }}>
+          <div className="login-wrap">
+            <div className="center" style={{ marginBottom: 20 }}>
+              <div className="ico-ph" style={{ width: 56, height: 56, fontSize: 26, margin: "0 auto 10px", borderRadius: 16, borderColor: "var(--info)", color: "var(--info)", background: "#eff6ff" }}>⚖</div>
+              <div className="b" style={{ fontSize: 18 }}>Court Case Manager</div>
+              <div className="tiny muted" style={{ marginTop: 3 }}>{mode === "signin" ? "Sign in with your court email" : "Request an account"}</div>
+            </div>
+            <div className="seg" style={{ marginBottom: 16 }}>
+              <div className={mode === "signin" ? "on" : ""} onClick={() => { setMode("signin"); setErr(""); }}>Sign in</div>
+              <div className={mode === "signup" ? "on" : ""} onClick={() => { setMode("signup"); setErr(""); }}>Sign up</div>
+            </div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 11 }}>
+              {mode === "signup" && (
+                <div className="col" style={{ gap: 3 }}><span className="seclabel">Full name</span>
+                  <input value={name} placeholder="Your name" onChange={(e) => { setName(e.target.value); setErr(""); }} style={fld(false)} />
+                </div>
+              )}
+              <div className="col" style={{ gap: 3 }}><span className="seclabel">Email</span>
+                <input type="email" value={email} placeholder="you@court.gov" autoCapitalize="none"
+                  onChange={(e) => { setEmail(e.target.value); setErr(""); }}
+                  onKeyDown={(e) => { if (e.key === "Enter" && mode === "signin") signin(); }} style={fld(!!err)} />
               </div>
-            )}
-            <div className="col" style={{ gap: 3 }}><span className="seclabel">Email</span>
-              <input type="email" value={email} placeholder="you@court.gov" autoCapitalize="none"
-                onChange={(e) => { setEmail(e.target.value); setErr(""); }}
-                onKeyDown={(e) => { if (e.key === "Enter" && mode === "signin") signin(); }} style={fld(!!err)} />
+              <div className="col" style={{ gap: 3 }}><span className="seclabel">Password</span>
+                <input type="password" value={pw} placeholder={mode === "signin" ? "Your password" : "Choose a password"}
+                  onChange={(e) => { setPw(e.target.value); setErr(""); }}
+                  onKeyDown={(e) => { if (e.key === "Enter") mode === "signin" ? signin() : signup(); }} style={fld(!!err)} />
+              </div>
+              {err && <span className="tiny" style={{ color: "var(--urgent)" }}>{err}</span>}
+              {mode === "signin"
+                ? <Tap className="wf-btn info block" onClick={signin}>Sign in</Tap>
+                : <Tap className="wf-btn info block" onClick={signup}>Request access</Tap>}
+              {mode === "signup" && <span className="tiny muted center">Parties &amp; counsel are provisioned by the court admin. Sign-up requests are reviewed.</span>}
             </div>
-            <div className="col" style={{ gap: 3 }}><span className="seclabel">Password</span>
-              <input type="password" value={pw} placeholder={mode === "signin" ? "Your password" : "Choose a password"}
-                onChange={(e) => { setPw(e.target.value); setErr(""); }}
-                onKeyDown={(e) => { if (e.key === "Enter") mode === "signin" ? signin() : signup(); }} style={fld(!!err)} />
-            </div>
-            {err && <span className="tiny" style={{ color: "var(--urgent)" }}>{err}</span>}
-            {mode === "signin"
-              ? <Tap className="wf-btn info block" onClick={signin}>Sign in</Tap>
-              : <Tap className="wf-btn info block" onClick={signup}>Request access</Tap>}
-            {mode === "signup" && <span className="tiny muted center">Parties &amp; counsel are provisioned by the court admin. Sign-up requests are reviewed.</span>}
+            {mode === "signin" && <div style={{ marginTop: 20, borderTop: "1px solid var(--line-2)", paddingTop: 16 }}>
+              <div className="center tiny muted" style={{ marginBottom: 8 }}>quick demo sign-in</div>
+              <div className="row wrap" style={{ gap: 6, justifyContent: "center" }}>
+                {["admin", "judge", "clerk", "counsel", "party"].map((r) => (
+                  <Chip key={r} cls="xs" onClick={() => quick(r)}>{ROLES[r].label}</Chip>
+                ))}
+              </div>
+            </div>}
           </div>
-          {mode === "signin" && <>
-            <div className="center tiny muted" style={{ flex: "0 0 auto" }}>quick demo sign-in</div>
-            <div className="row wrap" style={{ gap: 6, justifyContent: "center", flex: "0 0 auto" }}>
-              {["admin", "judge", "clerk", "counsel", "party"].map((r) => (
-                <Chip key={r} cls="xs" onClick={() => quick(r)}>{ROLES[r].label}</Chip>
-              ))}
-            </div>
-          </>}
         </div>
       </div>
     </>
