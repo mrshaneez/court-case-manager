@@ -1665,7 +1665,7 @@ body {
     min-height: 100% !important;
   }
 
-  /* ── Nuke the phone shell — become a full-screen web app ─────── */
+  /* ── Nuke the phone shell — full-screen container ───────────── */
   .app-phone {
     width: 100%   !important;
     height: 100%  !important;
@@ -1674,9 +1674,20 @@ body {
     transform: none     !important;
     transform-origin: unset !important;
     box-shadow: none    !important;
-    flex-direction: row !important;
+    flex-direction: column !important;
     background: transparent !important;
     font-size: 14px;
+  }
+
+  /* ── KEY FIX: screen-anim wraps sidebar + content, needs row ── */
+  /* index.html wraps <Comp> in div.app-screen.screen-anim.       */
+  /* TabBar and inner .app-screen are children of screen-anim,    */
+  /* not of app-phone directly. So ROW goes here, not on app-phone */
+  .app-screen.screen-anim {
+    flex-direction: row !important;
+    background: transparent !important;
+    width: 100% !important;
+    flex: 1 !important;
   }
 
   /* ── Hide phone-only chrome ─────────────────────────────────── */
@@ -1763,15 +1774,15 @@ body {
   }
   .tabbadge { font-size: 9px; }
 
-  /* ── Main content column ────────────────────────────────────── */
-  .app-screen {
+  /* ── Inner content column (not the screen-anim wrapper) ─────── */
+  .screen-anim > .app-screen {
     flex: 1 1 0 !important;
     min-width: 0 !important;
     height: 100% !important;
     background: linear-gradient(160deg, #f3f2f0 0%, #edecea 100%);
     overflow: hidden;
     display: flex;
-    flex-direction: column;
+    flex-direction: column !important;
   }
 
   /* ── App / top bar ──────────────────────────────────────────── */
@@ -1834,8 +1845,10 @@ body {
   .tl     { padding-left: 22px; }
   .pdfbar { font-size: 13px; padding: 8px 14px; }
 
-  /* ── Login page ─────────────────────────────────────────────── */
+  /* ── Login page (direct child of app-phone, no screen-anim) ── */
   .login-screen {
+    flex: 1 !important;
+    height: 100% !important;
     background:
       radial-gradient(ellipse 70% 55% at 15% 35%, rgba(99,102,241,.4) 0%, transparent 60%),
       radial-gradient(ellipse 55% 45% at 85% 15%, rgba(139,92,246,.3) 0%, transparent 55%),
