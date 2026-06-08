@@ -76,6 +76,7 @@
 html, body {
   margin: 0;
   height: 100%;
+  width: 100%;
 }
 
 body {
@@ -1643,55 +1644,62 @@ body {
 
 /* ══════════════════════════════════════════════════════════════
    RESPONSIVE WEB / DESKTOP LAYOUT  (≥ 768 px)
-   Tab bar → vertical sidebar · Phone shell → full viewport
+   Overrides all phone-shell sizing and transforms.
    ══════════════════════════════════════════════════════════════ */
 
 @media (min-width: 768px) {
 
-  /* ── Background ─────────────────────────────────────────────── */
-  body {
-    background: linear-gradient(135deg, #eef2ff 0%, #f5f3ff 50%, #e0f2fe 100%);
-    align-items: stretch;
-    justify-content: stretch;
-    min-height: 100dvh;
+  /* ── Root sizing: explicit 100% so children can fill it ─────── */
+  html, body {
+    height: 100%;
+    overflow: hidden;
   }
 
-  /* ── Full-screen shell (no phone chrome) ────────────────────── */
+  body {
+    background: linear-gradient(135deg, #eef2ff 0%, #f5f3ff 50%, #e0f2fe 100%) !important;
+    align-items: stretch !important;
+    justify-content: flex-start !important;
+    min-height: 100% !important;
+  }
+
+  /* ── Nuke the phone shell — become a full-screen web app ─────── */
   .app-phone {
-    width: 100vw;
-    height: 100dvh;
-    border-radius: 0;
-    transform: none !important;
-    box-shadow: none;
-    flex-direction: row;
-    background: transparent;
+    width: 100%   !important;
+    height: 100%  !important;
+    min-height: 0 !important;
+    border-radius: 0    !important;
+    transform: none     !important;
+    transform-origin: unset !important;
+    box-shadow: none    !important;
+    flex-direction: row !important;
+    background: transparent !important;
     font-size: 14px;
   }
 
-  /* ── Hide phone status bar ──────────────────────────────────── */
-  .wf-status { display: none; }
+  /* ── Hide phone-only chrome ─────────────────────────────────── */
+  .wf-status { display: none !important; }
 
   /* ── Sidebar ────────────────────────────────────────────────── */
   .wf-tabbar {
-    order: -1;             /* renders left of app-screen */
-    flex-direction: column;
-    align-items: stretch;
-    justify-content: flex-start;
-    width: 224px;
-    flex: 0 0 224px;
-    height: 100%;
-    border-top: none;
-    border-right: 1px solid var(--line);
-    background: #ffffff;
-    padding: 0 10px 20px;
-    gap: 2px;
+    order: -1 !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    justify-content: flex-start !important;
+    width: 220px !important;
+    flex: 0 0 220px !important;
+    height: 100% !important;
+    border-top: none !important;
+    border-right: 1px solid var(--line) !important;
+    background: #fff !important;
+    padding: 0 10px 20px !important;
+    gap: 2px !important;
     overflow-y: auto;
-    box-shadow: 1px 0 3px rgba(0,0,0,.05);
+    box-shadow: 1px 0 4px rgba(0,0,0,.06);
   }
 
   /* ── Sidebar brand header ───────────────────────────────────── */
   .sidebar-brand {
-    display: flex;
+    display: flex !important;
     align-items: center;
     gap: 11px;
     padding: 22px 6px 18px;
@@ -1699,7 +1707,7 @@ body {
     border-bottom: 1px solid var(--line-2);
   }
   .sidebar-logo {
-    display: flex;
+    display: flex !important;
     align-items: center;
     justify-content: center;
     width: 36px;
@@ -1712,14 +1720,14 @@ body {
     box-shadow: 0 3px 10px rgba(37,99,235,.35);
   }
   .sidebar-appname {
-    display: block;
+    display: block !important;
     font-size: 14px;
     font-weight: 700;
     color: var(--ink);
     line-height: 1.2;
   }
   .sidebar-role {
-    display: block;
+    display: block !important;
     font-size: 10.5px;
     color: var(--ink-soft);
     margin-top: 2px;
@@ -1727,86 +1735,87 @@ body {
 
   /* ── Sidebar nav items ──────────────────────────────────────── */
   .wf-tabbar .tab {
-    flex: none;
-    flex-direction: row;
-    justify-content: flex-start;
-    align-items: center;
-    padding: 10px 14px;
+    flex: none !important;
+    flex-direction: row !important;
+    justify-content: flex-start !important;
+    align-items: center !important;
+    padding: 10px 14px !important;
     border-radius: 9px;
-    font-size: 13.5px;
-    font-weight: 500;
-    gap: 12px;
+    font-size: 13.5px !important;
+    font-weight: 500 !important;
+    gap: 12px !important;
     color: var(--ink-soft);
     transition: background 0.12s ease, color 0.12s ease;
+    width: auto !important;
   }
-  .wf-tabbar .tab:hover { background: var(--paper-2); color: var(--ink); }
-  .wf-tabbar .tab.on {
-    background: #eff6ff;
-    color: var(--info);
-    font-weight: 600;
-  }
-  .wf-tabbar .ico {
-    width: 28px;
-    height: 28px;
-    font-size: 18px;
-    background: transparent;
-    border: none;
-  }
+  .wf-tabbar .tab:hover  { background: var(--paper-2); color: var(--ink); }
+  .wf-tabbar .tab.on     { background: #eff6ff; color: var(--info); font-weight: 600 !important; }
   .wf-tabbar .tab.on .ico { color: var(--info); }
+  .wf-tabbar .ico {
+    width: 26px !important;
+    height: 26px !important;
+    font-size: 17px !important;
+    background: transparent !important;
+    border: none !important;
+  }
   .tabbadge { font-size: 9px; }
 
-  /* ── Main content area ──────────────────────────────────────── */
+  /* ── Main content column ────────────────────────────────────── */
   .app-screen {
-    flex: 1;
-    min-width: 0;
-    background: linear-gradient(160deg, #f4f3f1 0%, #efeee9 100%);
-    height: 100%;
+    flex: 1 1 0 !important;
+    min-width: 0 !important;
+    height: 100% !important;
+    background: linear-gradient(160deg, #f3f2f0 0%, #edecea 100%);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
   }
 
-  /* ── App bar (top header on desktop) ────────────────────────── */
+  /* ── App / top bar ──────────────────────────────────────────── */
   .wf-appbar {
-    padding: 14px 28px 16px;
-    background: #ffffff;
-    border-bottom: 1px solid var(--line);
+    padding: 14px 28px 16px !important;
+    background: #fff !important;
+    border-bottom: 1px solid var(--line) !important;
     box-shadow: 0 1px 4px rgba(0,0,0,.04);
   }
-  .wf-appbar .title { font-size: 20px; }
-  .wf-appbar .sub   { font-size: 12px; }
+  .wf-appbar .title { font-size: 20px !important; }
+  .wf-appbar .sub   { font-size: 12px !important; }
 
-  /* ── Scrollable body ────────────────────────────────────────── */
+  /* ── Scrollable content body ────────────────────────────────── */
   .app-body {
-    padding: 22px 28px;
-    gap: 16px;
-    max-width: 1040px;
+    padding: 22px 28px !important;
+    gap: 16px !important;
+    max-width: 1060px;
+    box-sizing: border-box;
   }
 
-  /* ── Tile grid → 4 columns on desktop ──────────────────────── */
-  .tile-grid {
-    grid-template-columns: repeat(4, 1fr);
-    gap: 10px;
-  }
-  .tile { padding: 14px 16px; }
-  .tile .num { font-size: 30px; }
+  /* ── Tile grid → 4 columns ──────────────────────────────────── */
+  .tile-grid { grid-template-columns: repeat(4, 1fr) !important; gap: 10px !important; }
+  .tile      { padding: 14px 16px !important; }
+  .tile .num { font-size: 30px !important; }
 
   /* ── Cards ──────────────────────────────────────────────────── */
-  .sk, .sk-2 {
-    border-radius: 14px;
-  }
-  .pad-s { padding: 10px 12px; }
+  .sk, .sk-2   { border-radius: 14px !important; }
+  .pad-s       { padding: 10px 12px !important; }
 
-  /* ── Segmented control ──────────────────────────────────────── */
-  .seg { font-size: 12.5px; }
-  .seg > div { padding: 7px 0; }
+  /* ── Typography ─────────────────────────────────────────────── */
+  .seclabel   { font-size: 11px; letter-spacing: 0.7px; }
+  .chip       { font-size: 11.5px; padding: 3px 9px; }
+  .chip.xs    { font-size: 10.5px; padding: 2px 7px; }
 
-  /* ── Tabs ───────────────────────────────────────────────────── */
-  .tabs > div { font-size: 13px; padding: 8px 14px 9px; }
+  /* ── Controls ───────────────────────────────────────────────── */
+  .seg > div        { padding: 7px 0; font-size: 12.5px; }
+  .tabs > div       { font-size: 13px; padding: 8px 14px 9px; }
+  .wf-btn           { font-size: 14px; padding: 8px 16px; border-radius: 9px; }
+  .wf-btn.sm        { font-size: 12.5px; padding: 6px 13px; }
+  .wf-search        { font-size: 14px; padding: 10px 14px; border-radius: 12px; }
 
   /* ── FAB ────────────────────────────────────────────────────── */
-  .wf-fab { right: 28px; bottom: 28px; width: 56px; height: 56px; font-size: 28px; }
+  .wf-fab { right: 28px !important; bottom: 28px !important; width: 56px; height: 56px; font-size: 28px; }
 
-  /* ── Toast ──────────────────────────────────────────────────── */
+  /* ── Toast (bottom-right on desktop) ───────────────────────── */
   .app-toast {
-    left: auto;
+    left: auto !important;
     right: 28px;
     bottom: 28px;
     width: 300px;
@@ -1814,52 +1823,21 @@ body {
     font-size: 13.5px;
   }
 
-  /* ── Sheet ──────────────────────────────────────────────────── */
-  .app-scrim { position: fixed; }
-  .app-sheet {
-    width: 420px;
-    margin: 0 auto;
-    border-radius: 16px 16px 0 0;
-  }
+  /* ── Bottom sheet → centered modal feel ────────────────────── */
+  .app-scrim  { position: fixed !important; }
+  .app-sheet  { width: 420px; margin: 0 auto; border-radius: 16px 16px 0 0; }
 
-  /* ── Buttons ────────────────────────────────────────────────── */
-  .wf-btn { font-size: 14px; padding: 8px 16px; border-radius: 9px; }
-  .wf-btn.sm { font-size: 12.5px; padding: 6px 13px; }
-
-  /* ── Sections label ─────────────────────────────────────────── */
-  .seclabel { font-size: 11px; letter-spacing: 0.7px; }
-
-  /* ── Chip ───────────────────────────────────────────────────── */
-  .chip { font-size: 11.5px; padding: 3px 9px; }
-  .chip.xs { font-size: 10.5px; padding: 2px 7px; }
-
-  /* ── Timeline ───────────────────────────────────────────────── */
-  .tl { padding-left: 22px; }
-
-  /* ── Search ─────────────────────────────────────────────────── */
-  .wf-search { font-size: 14px; padding: 10px 14px; border-radius: 12px; }
-
-  /* ── PDF bar ────────────────────────────────────────────────── */
+  /* ── Timeline, PDF ──────────────────────────────────────────── */
+  .tl     { padding-left: 22px; }
   .pdfbar { font-size: 13px; padding: 8px 14px; }
-
-  /* ── Login page (web centered card) ────────────────────────── */
-  .login-card {
-    max-width: 400px;
-    margin: auto;
-    border-radius: 20px;
-    box-shadow: 0 8px 32px rgba(0,0,0,.12), 0 2px 8px rgba(0,0,0,.06);
-  }
-
-  /* ── Back button ────────────────────────────────────────────── */
-  .wf-appbar .tap { font-size: 22px; }
 }
 
 @media (min-width: 1100px) {
-  .wf-tabbar { width: 240px; flex: 0 0 240px; }
-  .app-body  { padding: 28px 36px; }
+  .wf-tabbar { width: 240px !important; flex: 0 0 240px !important; }
+  .app-body  { padding: 28px 36px !important; }
 }
 
 @media (min-width: 1400px) {
-  .wf-tabbar { width: 260px; flex: 0 0 260px; }
+  .wf-tabbar { width: 260px !important; flex: 0 0 260px !important; }
   .app-body  { max-width: 1200px; }
 }
